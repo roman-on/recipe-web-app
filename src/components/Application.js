@@ -3,30 +3,22 @@ import axios from "axios";
 
 function Application() {
   const [name, setName] = useState("");
-  // const [headingText, setHeading] = useState("");
-  // console.log("++++++++++++++++++++++++++++++++++++++++++++++++" + headingText);
 
   const [data, setData] = useState("");
-  // const [img, setImg] = useState("");
 
   const [show, setShow] = useState(false);
   
   const [moreInfo, setMoreInfo] = useState("");
-  console.log(moreInfo.extendedIngredients);
+  console.log(moreInfo);
 
-
+  let index = 0
 
   const handleChange = (event) => {
-    // console.log(event.target.data);
     setName(event.target.value);
   };
 
 
   const handleClick = (event) => {
-    // if (name !== "") {
-    // setHeading(name);
-    // }
-    // setHeading(name);
     event.preventDefault();
   };
 
@@ -37,21 +29,15 @@ function Application() {
 
 
 
-  // let idNum = 0
 
   const fetchRecipeName = (fillName) => {
     let link = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
 
     axios.get(link)
     .then((res) => {
-      // console.log(res.data.results);
       const newData = res.data.results
-      // const newDataImg = res.data.results[0].image
       if (fillName) {
         setData(newData);
-        // console.log(res.data.results[0].id);
-        // idNum = 
-        // setImg(newDataImg)
       }
     })
     .catch((err) => {
@@ -69,8 +55,7 @@ function Application() {
 
   // New!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   const fetchRecipeMoreInfo = (id) => {
-    // let link = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
-    let link = `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
+    let link = `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${process.env.REACT_APP_API_KEY}`
 
     console.log("++++++++++++++++" + id);
     axios.get(link)
@@ -109,29 +94,16 @@ function Application() {
         />
         <button type="submit" onClick={fillOnClick}>Search</button>
       </form>
-
-      {/* <div>
-        <h3>Results:</h3>
-        {title && <h5>Recipe Name:</h5>}
-        
-        <a href={"hey"}>{title}</a>
-        <br />
-        <br />
-        <img alt="" src={img}/>
-      </div> */}
-
       <h3>Results:</h3>
       <ul>
         {data &&
           data.map((item) => (
             <li key={item.id}>
               <h4>Recipe Name:</h4>
-              {/* {item.id} */}
-              {/* <a href={"hey"}>{item.title}</a> */}
               <p>{item.title}</p>
               <br />
-              <br />
               <img alt="" src={item.image}/>
+              <br />
               <br />
               <button 
               onClick={() => {
@@ -142,10 +114,22 @@ function Application() {
               {
               item.id === moreInfo.id && 
                 <div>
-                  <h4>More Info:</h4>
-                  <p>Vegan: {moreInfo.vegan ? "Yes" : "No"}</p>
-                  <p>Dairy Free: {moreInfo.dairyFree ? "Yes" : "No"}</p>
-                  <p>Ingredients: {moreInfo.extendedIngredients.map((ingredient) => ingredient.name + ", ")}</p>
+                  <h4>Health Information:</h4>
+                  <p>&emsp; Vegan: {moreInfo.vegan ? "Yes" : "No"}</p>
+                  <p>&emsp; Dairy Free: {moreInfo.dairyFree ? "Yes" : "No"}</p>
+                  <h4>List of ingredients:</h4>
+                  <p>
+                  {
+                  moreInfo.extendedIngredients.map((ingredient) => 
+                  <> &emsp; {++index}. {
+                    ingredient.name.charAt(0).toUpperCase() + ingredient.name.slice(1)
+                     + " " + ingredient.measures.metric.amount + " " + ingredient.measures.metric.unitShort}<br /></>)
+                  
+                  
+                  }
+                  </p>
+                  <h4>Cooking instructions:</h4>
+                  <div dangerouslySetInnerHTML={ { __html: moreInfo.instructions } }></div>
                 </div>
               }
               <br />
