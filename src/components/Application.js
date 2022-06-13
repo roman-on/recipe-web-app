@@ -9,6 +9,8 @@ function Application() {
   const [data, setData] = useState("");
   // const [img, setImg] = useState("");
 
+  const [show, setShow] = useState(false);
+
   const handleChange = (event) => {
     console.log(event.target.data);
     setName(event.target.value);
@@ -77,17 +79,26 @@ function Application() {
         <img alt="" src={img}/>
       </div> */}
 
-
+      <h3>Results:</h3>
       <ul>
         {data &&
           data.map((book) => (
             <li key={book.id}>
-              <h5>Recipe Name:</h5>
+              <h4>Recipe Name:</h4>
               {/* {book.id} */}
               <a href={"hey"}>{book.title}</a>
               <br />
               <br />
               <img alt="" src={book.image}/>
+              <br />
+              <button onClick={() => setShow(!show)}>More Info</button>
+              {
+              show && 
+              <h4>More Info:</h4>
+                
+              }
+              <br />
+              <p>-------------------------------------------</p>
             </li>
           ))}
       </ul>
