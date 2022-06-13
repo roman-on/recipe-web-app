@@ -33,7 +33,7 @@ function Application() {
 
 
   const fetchRecipeName = (fillName) => {
-    let link = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=7f06dd61cf30480da411a27167a43d2b&complexSearch`
+    let link = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
 
     axios.get(link)
     .then((res) => {
