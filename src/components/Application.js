@@ -10,9 +10,14 @@ function Application() {
   // const [img, setImg] = useState("");
 
   const [show, setShow] = useState(false);
+  
+  const [moreInfo, setMoreInfo] = useState("");
+  console.log(moreInfo.extendedIngredients);
+
+
 
   const handleChange = (event) => {
-    console.log(event.target.data);
+    // console.log(event.target.data);
     setName(event.target.value);
   };
 
@@ -32,18 +37,20 @@ function Application() {
 
 
 
-
+  // let idNum = 0
 
   const fetchRecipeName = (fillName) => {
     let link = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
 
     axios.get(link)
     .then((res) => {
-      console.log(res.data.results);
+      // console.log(res.data.results);
       const newData = res.data.results
       // const newDataImg = res.data.results[0].image
       if (fillName) {
         setData(newData);
+        // console.log(res.data.results[0].id);
+        // idNum = 
         // setImg(newDataImg)
       }
     })
@@ -56,6 +63,40 @@ function Application() {
     fetchRecipeName()
   }, []);
 
+
+
+
+
+  // New!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  const fetchRecipeMoreInfo = (id) => {
+    // let link = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
+    let link = `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
+
+    console.log("++++++++++++++++" + id);
+    axios.get(link)
+    .then((res) => {
+      // console.log(res.data);
+      const newMoreData = res.data
+      if (id) {
+        setMoreInfo(newMoreData);
+      }
+    })
+    .catch((err) => {
+      // console.log(err);
+    })
+  }
+
+  useEffect(() => {
+    fetchRecipeMoreInfo()
+  }, []);
+
+
+
+
+
+
+
+  
   return (
     <div className="App">
       <h1>Find a Recipe</h1>
@@ -92,11 +133,20 @@ function Application() {
               <br />
               <img alt="" src={item.image}/>
               <br />
-              <button onClick={() => setShow(!show)}>More Info</button>
+              <button 
+              onClick={() => {
+                setShow(!show)
+                fetchRecipeMoreInfo(item.id)
+              }}
+              >More Info</button>
               {
-              show && 
-              <h4>More Info:</h4>
-                
+              item.id === moreInfo.id && 
+                <div>
+                  <h4>More Info:</h4>
+                  <p>Vegan: {moreInfo.vegan ? "Yes" : "No"}</p>
+                  <p>Dairy Free: {moreInfo.dairyFree ? "Yes" : "No"}</p>
+                  <p>Ingredients: {moreInfo.extendedIngredients.map((ingredient) => ingredient.name + ", ")}</p>
+                </div>
               }
               <br />
               <p>-------------------------------------------</p>
