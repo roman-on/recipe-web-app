@@ -56,7 +56,7 @@ function Application() {
 
   return (
     <div className="App">
-      <h1>ind a Recipe</h1>
+      <h1>Find a Recipe</h1>
       <form onSubmit={handleClick}>
         <input
           onChange={handleChange}
