@@ -82,14 +82,15 @@ function Application() {
       <h3>Results:</h3>
       <ul>
         {data &&
-          data.map((book) => (
-            <li key={book.id}>
+          data.map((item) => (
+            <li key={item.id}>
               <h4>Recipe Name:</h4>
-              {/* {book.id} */}
-              <a href={"hey"}>{book.title}</a>
+              {/* {item.id} */}
+              {/* <a href={"hey"}>{item.title}</a> */}
+              <p>{item.title}</p>
               <br />
               <br />
-              <img alt="" src={book.image}/>
+              <img alt="" src={item.image}/>
               <br />
               <button onClick={() => setShow(!show)}>More Info</button>
               {
