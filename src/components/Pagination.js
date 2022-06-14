@@ -12,9 +12,14 @@ const Pagination = ({ postsPerPage, totalPosts, paginate}) => {
       <ul className="pagination App">
         {pageNumbers.map(number => (
           <li key={number} className="page-item">
-            <a href="!#" className="page-link" onClick={() => paginate(number)}>
+            <span className="page-link" 
+            onClick={() => {
+              paginate(number)
+              window.scrollTo(0, 0);
+            }
+            }>
               {number}
-            </a>
+            </span>
           </li>
         ))}
       </ul>

@@ -60,6 +60,8 @@ function Application() {
   }, [])
 
 
+
+
   // Second JSON ----------------------------------------------------
   const fetchRecipeMoreInfo = (id) => {
     let url = `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${process.env.REACT_APP_API_KEY}`
