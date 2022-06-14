@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Pagination from "./Pagination"
 
 function Application() {
   const [name, setName] = useState("");
-
   const [data, setData] = useState("");
-
   const [show, setShow] = useState(false);
-  
   const [moreInfo, setMoreInfo] = useState("");
-  console.log(moreInfo);
-
+  // console.log(data);
   let index = 0
 
   const handleChange = (event) => {
@@ -30,15 +27,27 @@ function Application() {
 
 
 
-  const fetchRecipeName = (fillName) => {
-    let link = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
+  // First JSON ----------------------------------------------------
+  // const fetchRecipeName = async (fillName) => {
+  //   setLoading(true)
+  //   const res = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`)
+  //   // setPosts(res.data)
+  //   const newData = res.data.results
+  //   setData(newData);
+  //   setLoading(false)
+  // }
 
-    axios.get(link)
+  const fetchRecipeName = (fillName) => {
+    let url = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${fillName}&apiKey=${process.env.REACT_APP_API_KEY}&complexSearch`
+    
+    axios.get(url)
     .then((res) => {
+      // console.log(res.data);
       const newData = res.data.results
-      if (fillName) {
-        setData(newData);
-      }
+      setData(newData);
+      // if (id !== "") {
+      //   setMoreInfo(newMoreData);
+      // }
     })
     .catch((err) => {
       // console.log(err);
@@ -47,24 +56,20 @@ function Application() {
 
   useEffect(() => {
     fetchRecipeName()
-  }, []);
+  }, [])
 
 
-
-
-
-  // New!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Second JSON ----------------------------------------------------
   const fetchRecipeMoreInfo = (id) => {
-    let link = `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${process.env.REACT_APP_API_KEY}`
-
-    console.log("++++++++++++++++" + id);
-    axios.get(link)
+    let url = `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${process.env.REACT_APP_API_KEY}`
+    axios.get(url)
     .then((res) => {
       // console.log(res.data);
       const newMoreData = res.data
-      if (id) {
-        setMoreInfo(newMoreData);
-      }
+      setMoreInfo(newMoreData);
+      // if (id !== "") {
+      //   setMoreInfo(newMoreData);
+      // }
     })
     .catch((err) => {
       // console.log(err);
@@ -78,7 +83,23 @@ function Application() {
 
 
 
+  // Pagination ---------------------------------------------
+  // const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [postsPerPage] = useState(5)
 
+  if (loading) {
+    return <h2>Loading...</h2>
+  }
+
+  // Get current posts ::
+  const indexOfLastPost = currentPage * postsPerPage
+  const indexOfFirstPost = indexOfLastPost - postsPerPage
+  const currentPosts = data.slice(indexOfFirstPost, indexOfLastPost)
+
+  // Change page ::
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
 
   
@@ -92,12 +113,13 @@ function Application() {
           placeholder="Search a Recipe"
           value={name}
         />
-        <button type="submit" onClick={fillOnClick}>Search</button>
+        <button className="btn-primary" type="submit" onClick={fillOnClick}>Search</button>
       </form>
+      <br />
       <h3>Results:</h3>
       <ul>
-        {data &&
-          data.map((item) => (
+        {currentPosts &&
+          currentPosts.map((item) => (
             <li key={item.id}>
               <h4>Recipe Name:</h4>
               <p>{item.title}</p>
@@ -106,11 +128,14 @@ function Application() {
               <br />
               <br />
               <button 
+              className="btn-primary"
               onClick={() => {
                 setShow(!show)
                 fetchRecipeMoreInfo(item.id)
               }}
               >More Info</button>
+              <br />
+              <br />
               {
               item.id === moreInfo.id && 
                 <div>
@@ -118,25 +143,26 @@ function Application() {
                   <p>&emsp; Vegan: {moreInfo.vegan ? "Yes" : "No"}</p>
                   <p>&emsp; Dairy Free: {moreInfo.dairyFree ? "Yes" : "No"}</p>
                   <h4>List of ingredients:</h4>
-                  <p>
-                  {
-                  moreInfo.extendedIngredients.map((ingredient) => 
-                  <> &emsp; {++index}. {
-                    ingredient.name.charAt(0).toUpperCase() + ingredient.name.slice(1)
-                     + " " + ingredient.measures.metric.amount + " " + ingredient.measures.metric.unitShort}<br /></>)
-                  
-                  
-                  }
-                  </p>
+                  <span>
+                    {
+                    moreInfo.extendedIngredients.map((ingredient) => 
+                    <div key={ingredient.id}> &emsp; {++index}. {
+                      ingredient.name.charAt(0).toUpperCase() + ingredient.name.slice(1)
+                      + " " + ingredient.measures.metric.amount + " " + ingredient.measures.metric.unitShort}<br /></div>)
+                    }
+                  </span>
+                  <br />
                   <h4>Cooking instructions:</h4>
                   <div dangerouslySetInnerHTML={ { __html: moreInfo.instructions } }></div>
                 </div>
               }
-              <br />
               <span>___________________________________________</span>
+              <br />
+              <br />
             </li>
           ))}
       </ul>
+      <Pagination postsPerPage={postsPerPage} totalPosts={data.length} paginate={paginate}/>
     </div>
   );
 }
