@@ -22,6 +22,7 @@ function Application() {
 
   const fillOnClick = () => {
     fetchRecipeName(name)
+    setCurrentPage(1)
   }
 
 
