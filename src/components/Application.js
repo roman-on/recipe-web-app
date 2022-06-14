@@ -120,6 +120,7 @@ function Application() {
       </form>
       <br />
       <h3>Results:</h3>
+      {!data && <h1 style={{color: "red"}}>Your Daily Search limit is Off, Please let the moderator know to refill the daily limit</h1>}
       <ul>
         {currentPosts &&
           currentPosts.map((item) => (
